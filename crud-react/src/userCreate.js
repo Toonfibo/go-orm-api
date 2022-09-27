@@ -1,6 +1,6 @@
 import  React, { useState } from 'react';
 import CssBaseline from '@mui/material/CssBaseline';
-import Box from '@mui/material/Box';
+
 import Container from '@mui/material/Container';
 import TextField from '@mui/material/TextField';
 import { Grid, Typography, Button } from '@mui/material';
@@ -29,7 +29,7 @@ const handleSubmit = event =>{
       .then(response => response.json())
       .then(result => {
         alert(result['message'])
-         if (result['status']=== 'ok'){
+         if (result['status'] === 'ok'){
              window.location.href ='/'
          }
       })

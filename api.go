@@ -38,50 +38,65 @@ func main() {
 
 	r.GET("/users/:id", func(c *gin.Context) {
 		id := c.Param("id")
+
 		var users model.User
+		
 		db.First(&users, id)
-		c.JSON(200, users)
+		
+		  
+		c.JSON(http.StatusOK, gin.H{"status":"ok","users":users ,"message":"User :"+id,})
+		//c.JSON(http.StatusOK, &users)
+		//c.JSON(http.StatusOK,gin.H{"status":"ok","message":"User :"+id,})
+
 	})
 	// create
 	r.POST("/users/create", func(c *gin.Context) {
-		
-		var  users model.User
+
+		var users model.User
+
 		if err := c.ShouldBindJSON(&users); err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
 		}
-		 db.Create(&users)
-		 message := "Created user : "+ c.Param("id")
-		c.JSON(http.StatusOK, gin.H{"message": message})   
+		db.Create(&users)
 
+		//c.JSON(http.StatusOK,users)
+		c.JSON(http.StatusOK, gin.H{"status": "ok", "message": "Created User successfully"})
+		//c.JSON(http.StatusOK)
+		// result := db.Create(&users)
 		//c.JSON(200, gin.H{"RowsAAffected": result.RowsAffected})
 
 	})
 	//Delete
-	r.DELETE("/users/:id/delete", func(c *gin.Context) {
+	r.DELETE("/users/delete/:id", func(c *gin.Context) {
 		id := c.Param("id")
 		var users model.User
+
 		db.First(&users, id)
 		db.Delete(&users)
-		c.JSON(200, users)
+		c.JSON(http.StatusOK, gin.H{"status": "ok","message": "Deleted  User successfully : "+id, })
 
 	})
-//updateed
-	r.PUT("/users/update", func(c *gin.Context) {
-		var user model.User
+	
+
+	//updated
+	r.PUT("/users/update/", func(c *gin.Context) {
+		
+		var users model.User
 		var updatedUser model.User
-		if err := c.ShouldBindJSON(&user); err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		if err := c.ShouldBindJSON(&users); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error(),})
 			return
 		}
-		db.First(&updatedUser, user.ID)
-		updatedUser.Fname = user.Fname
-		updatedUser.Lname = user.Lname
-		updatedUser.Username = user.Username
-		updatedUser.Avatar = user.Avatar
-		db.Save(updatedUser)
-
-		c.JSON(200, updatedUser)
+		db.First(&updatedUser,users.ID)
+		
+		updatedUser.Fname = users.Fname
+		updatedUser.Lname = users.Lname
+		updatedUser.Username = users.Username
+		updatedUser.Avatar = users.Avatar
+		db.Save(&updatedUser)
+		c.JSON(200, gin.H{"status": "ok", "message": "Updated User successfully ","user": updatedUser,})
+		//c.JSON(200, updatedUser)
 
 	})
 	// config := cors.DefaultConfig()

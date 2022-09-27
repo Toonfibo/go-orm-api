@@ -1,4 +1,4 @@
-import React,{ useState, useEffect } from 'react';
+import React,{ useState, useEffect  } from 'react';
 import CssBaseline from '@mui/material/CssBaseline';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
@@ -13,32 +13,47 @@ import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import Avatar from '@mui/material/Avatar';
 import Link from '@mui/material/Link';
+import { ButtonGroup } from '@mui/material';
 
 
-function createData(name, calories, fat, carbs, protein) {
-  return { name, calories, fat, carbs, protein };
-}
 
-const rows = [
-  createData('Frozen yoghurt', 159, 6.0, 24, 4.0),
-  createData('Ice cream sandwich', 237, 9.0, 37, 4.3),
-  createData('Eclair', 262, 16.0, 24, 6.0),
-  createData('Cupcake', 305, 3.7, 67, 4.3),
-  createData('Gingerbread', 356, 16.0, 49, 3.9),
-];
 
 export default function User() {
   const [items, setItems] = useState([]);
- 
+  
   useEffect(() => {
-    fetch("http://localhost:8080/users")
-      .then(res => res.json())
-      .then(
-        (result) => {
-          setItems(result);
-        }
-      )
+    UserGet()
   }, [])
+  const UserGet = () => {
+    fetch("http://localhost:8080/users")
+    .then(res => res.json())
+    .then(
+      (result) => {
+        setItems(result);
+      }
+    )
+  }
+  
+const UserUpdate = ID =>{
+  window.location.href ="users/update/"+ID
+}
+
+const UserDelete = ID =>{
+  var requestOptions = {
+    method: 'DELETE',
+    redirect: 'follow'
+  };
+  
+  fetch("http://localhost:8080/users/delete/"+ID, requestOptions)
+    .then(response => response.json())
+    .then(result => {
+      alert(result['message'])
+       if (result['status'] === 'ok'){
+           UserGet()
+       }
+    })
+    .catch(error => console.log('error', error));
+}
   return (
     <React.Fragment>
       <CssBaseline />
@@ -63,11 +78,11 @@ export default function User() {
           <TableRow>
             <TableCell>ID</TableCell>
             <TableCell align="center">Avtar</TableCell>
-            <TableCell align="right">Frist Name</TableCell>
-            <TableCell align="right">Last Name</TableCell>
-            <TableCell align="right">Username</TableCell>
+            <TableCell align="center">Frist Name</TableCell>
+            <TableCell align="center">Last Name</TableCell>
+            <TableCell align="center">Username</TableCell>
            
-            <TableCell align="right">Action</TableCell>
+            <TableCell align="center">Action</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
@@ -85,10 +100,15 @@ export default function User() {
                 </Box>
                 
               </TableCell>
-              <TableCell align="right">{row.Fname}</TableCell>
-              <TableCell align="right">{row.Lname}</TableCell>
-              <TableCell align="right">{row.Username}</TableCell>
-              <TableCell align="right"></TableCell>
+              <TableCell align="center">{row.Fname}</TableCell>
+              <TableCell align="center">{row.Lname}</TableCell>
+              <TableCell align="center">{row.Username}</TableCell>
+              <TableCell align="center">
+                <ButtonGroup variant="outlined" aria-label="outlined button group">
+                  <Button onClick={()=>UserUpdate(row.ID)}>Edit</Button>
+                  <Button onClick={() => UserDelete(row.ID)}>Del</Button>
+                </ButtonGroup>
+              </TableCell>
             </TableRow>
           ))}
         </TableBody>
